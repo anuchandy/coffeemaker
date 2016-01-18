@@ -93,7 +93,7 @@ The simulator creates the mock hardware, switch-on the coffee-maker [The is mean
   coffeemaker.SwitchOff()
 ```
 
-The HardwareAPIImpl satisfies an interface UserAction, inaddition to HardwareAPI interface.
+The HardwareAPIImpl satisfies an interface [UserAction](https://github.com/anuchandy/coffeemakerSimulator/blob/master/hardwareAPIImpl/hardwareAPIlmpl.go#L13), inaddition to HardwareAPI interface.
 
 ```go
 type UserAction interface {
@@ -133,9 +133,9 @@ func (a *Aggregator) Start() {
 }
 ```
 
-Note that this routine returns when it sees the eventChan is closed. The eventChan will be closed when we switch off the coffee-maker.
+This routine returns when it sees the eventChan is closed. The eventChan will be closed when we switch-off the coffee-maker.
 
-#### Coffee-machine Hardware monitoring (polling)
+#### Coffee-machine Hardware monitoring (polling) [Publisher]
 
 Coffee maker uses a seperate Go routine to poll the state of various hardware components and publish those states via EventAggregator.
 
@@ -165,22 +165,22 @@ func publishEvents(api hardwareAPI.QueryAPI) {
 }
 ```
 
-This Go routine uses select to listen on two channels timer and abortPoll. The routine returns When it sees an event in abortPoll channel which stops the polling.
+This Go routine uses [select](https://gobyexample.com/select) to listen on two channels timer and abortPoll. The routine returns When it sees an event in abortPoll channel which stops the polling.
 
 We sent abort signal when we switch-off the coffee machine.
 
 ```go
 func SwitchOff() {
-  abortPoll <- struct{}{}
-  agg.Stop()
+  abortPoll <- struct{}{} // Stop hardware polling
+  agg.Stop() // Stop aggregator from listening and publishing events
 }
 ```
 
-#### Coffee-machine Hardware controllers
+#### Coffee-machine Hardware controllers [Subscribers]
 
 Each hardware component of the coffee-maker is controlled by seperate controllers. The controllers can be found under [hardwareController](https://github.com/anuchandy/coffeemaker/tree/master/hardwareController) directory.
 
-Each controller subscribe for one or more hardware events that is used to decide:
+Each controller subscribe for one or more hardware events, these events are used to decide:
 * Whether or not to change the state of the component it controlling.
 * If state needs to be changed then what should to be the new state.
 
@@ -191,9 +191,7 @@ e.g.
 func NewBoilerController(aggregator *events.Aggregator, api hardwareAPI.CommandAPI) *BoilerController
 ```
 
-The creator method create the controller and subscribe for events that controller is interested to receive.
-
-#### Coffee-maker simulator
+The creator method create the controller and register the controller as subscribers for the events that they want to receive.
 
 
 
