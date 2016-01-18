@@ -15,15 +15,29 @@ The Mark IV Special makes up to 12 cups of coffee at a time. The user places a f
 
 The hardware for the Mark IV has been designed and is currently under development. The hardware engineers have even provided a low-level API for us to use, so we don't have to write any bit- twiddling I/O driver code.
 
-### The hardware interface API
+### The hardware API
 
 The code for the hardware interface functions written by hardware engineers can be found at:
   [Hardware API](https://github.com/anuchandy/coffeemaker/tree/master/hardwareAPI)
 
 In the original problem statement all the hardware interface functions are described in a single interface CoffeeMakerAPI.cs.
 After going through [Mark Seemann] (https://twitter.com/ploeh)'s [Encapsulation and SOLID] (http://beta.pluralsight.com/courses/encapsulation-solid)
-course, I decided to apply [Command-Query seperation principle](https://en.wikipedia.org/wiki/Command–query_separation) which result in two interfaces 
+course, I decided to apply [Command-Query seperation principle](https://en.wikipedia.org/wiki/Command–query_separation) which result in two interfaces:
  
 * [CommandAPI.go](https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/commandAPI.go)
 * [QueryAPI.go] (https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/queryAPI.go)
+
+### The Coffee machine simulator
+
+A command-line project that simulates Coffee-Machine working can be found [here] (https://github.com/anuchandy/coffeemakerSimulator). The simulator project contains two components:
+
+* A mock [implementation](https://github.com/anuchandy/coffeemakerSimulator/tree/master/hardwareAPIImpl) of above mentoned hardware API
+* A command-line user interface that allows user to:
+    1. Fill water into Boiler
+    2. Place pot in Warmer plate
+    3. Remove pot from Warmer plate
+    4. Press Brewing button
+    5. See the current state of the machine
+    6. Exit the simulation
+
 
