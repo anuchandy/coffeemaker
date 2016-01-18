@@ -31,8 +31,8 @@ The HardwareAPI interface composes above two interfaces.
 
 ```go
 type HardwareAPI interface {
-	QueryAPI
-	CommandAPI
+  QueryAPI
+  CommandAPI
 }
 ```
 
@@ -99,3 +99,11 @@ func SwitchOff() {
   agg.Stop()
 }
 ```
+
+#### Coffee-machine Hardware controllers
+
+Each hardware component of the coffee-maker is controlled by seperate controllers. The controllers can be found under [hardwareController](https://github.com/anuchandy/coffeemaker/tree/master/hardwareController) directory.
+
+Each controller subscribe for one or more hardware events that is used to decide:
+* Whether or not to change the state of the component it controlling.
+* What should to be the state.
