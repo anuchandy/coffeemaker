@@ -59,23 +59,22 @@ The simulator aquire an instance hardware API mock implementation and pass it to
 
 Coffee maker uses a basic implementation of EventAggregator, which act as a container for coffee machine hardware events that decouples hardware polling Go routine (the publisher) and the hardware controllers (subscribers). The implementation of EventAggregator can be found in [events](https://github.com/anuchandy/coffeemaker/tree/master/events) directory.
 
-The published events will be send to eventsChan (```go eventsChan chan Event```) channel. Aggregator runs a dedicated Go routine to receive these events and dispatch to subscribers.
+The published events will be send to eventsChan (```go eventsChan chan Event```) channel. Aggregator runs a dedicated Go routine to receive these events and dispatch them to subscribers.
 
 ```go
 func (a *Aggregator) Start() {
-	go func() {
-		for {
-			e, ok := <-a.eventsChan
-			if !ok {
-				return // channel closed by Stop method
-			}
+  go func() {
+    for {
+      e, ok := <-a.eventsChan
+      if !ok {
+        return
+      }
 
-			// dispatch the event e
-			for _, subscriber := range a.subscribers[e] {
-				go subscriber.HandleEvent(e)
-			}
-		}
-	}()
+      for _, subscriber := range a.subscribers[e] {
+        go subscriber.HandleEvent(e)
+      }
+    }
+  }()
 }
 ```
 
