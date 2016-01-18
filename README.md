@@ -106,4 +106,14 @@ Each hardware component of the coffee-maker is controlled by seperate controller
 
 Each controller subscribe for one or more hardware events that is used to decide:
 * Whether or not to change the state of the component it controlling.
-* What should to be the state.
+* If state needs to be changed then what should to be the new state.
+
+When we create an instance of controllers, the create method requires reference to the EventAggregator and hardware API interface.
+
+```go
+func NewBoilerController(aggregator *events.Aggregator, api hardwareAPI.CommandAPI) *BoilerController
+```
+
+The creator method create the controller and subscribe for events that controller is interested to receive.
+
+
