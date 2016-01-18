@@ -36,6 +36,8 @@ type HardwareAPI interface {
 }
 ```
 
+I would highly recommand watching Mark Seemann's 'Encapsulation and SOLID' course, he uses the same Coffee Marker problem to show-case how to apply SOILD principles.
+
 ### The Coffee machine simulator
 
 A command-line project that simulates Coffee-Machine working can be found [here] (https://github.com/anuchandy/coffeemakerSimulator). The simulator project contains two components:
