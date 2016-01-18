@@ -29,7 +29,7 @@ course, I decided to apply [Command-Query seperation principle](https://en.wikip
 
 The HardwareAPI interface composes above two interfaces.
 
-```
+```go
 type HardwareAPI interface {
 	QueryAPI
 	CommandAPI
@@ -54,3 +54,48 @@ The simulator aquire an instance hardware API mock implementation and pass it to
 ### Design
 
 ![Alt text](/CoffeeMaker.JPG?raw=true "Coffee-Maker design")
+
+#### EventAggregator
+
+Coffee maker uses a basic implementation of EventAggregator, which act as a container for coffee machine hardware events that decouples hardware polling Go routine (the publisher) and the hardware controllers (subscribers). The implementation of EventAggregator can be found in [events](https://github.com/anuchandy/coffeemaker/tree/master/events) directory.
+
+#### Coffee-machine Hardware monitoring (polling)
+
+Coffee maker uses a seperate Go routine to poll the state of various hardware components and publish those states via EventAggregator.
+
+The Go routine polls and publish events in every one second in an infinte for loop.
+
+```go
+func pollHardware(api hardwareAPI.QueryAPI) {
+  ticker := time.NewTicker(1 * time.Second)
+  go func() {
+    for {
+      select {
+        case <-ticker.C:
+          publishEvents(api)
+        case <-abortPoll:
+          ticker.Stop()
+          return
+      }
+    }
+  }()
+}
+
+// publishEvents publishes the current state of coffee-maker.
+func publishEvents(api hardwareAPI.QueryAPI) {
+  agg.Publish(toBoilerEvent(api.GetBoilerStatus()))
+  agg.Publish(toBrewButtonEvent(api.GetBrewButtonStatus()))
+  agg.Publish(toWarmerPlateEvent(api.GetWarmerPlateStatus()))
+}
+```
+
+This Go routine uses select to listen on two channels timer and abortPoll. The routine returns When it sees an event in abortPoll channel which stops the polling.
+
+We sent abort signal when we switch-off the coffee machine.
+
+```go
+func SwitchOff() {
+  abortPoll <- struct{}{}
+  agg.Stop()
+}
+```
