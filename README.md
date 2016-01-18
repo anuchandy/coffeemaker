@@ -24,8 +24,17 @@ In the original problem statement all the hardware interface functions are descr
 After going through [Mark Seemann] (https://twitter.com/ploeh)'s [Encapsulation and SOLID] (http://beta.pluralsight.com/courses/encapsulation-solid)
 course, I decided to apply [Command-Query seperation principle](https://en.wikipedia.org/wiki/Command–query_separation) which result in two interfaces:
  
-* [CommandAPI.go](https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/commandAPI.go)
-* [QueryAPI.go] (https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/queryAPI.go)
+* [CommandAPI](https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/commandAPI.go)
+* [QueryAPI] (https://github.com/anuchandy/coffeemaker/blob/master/hardwareAPI/queryAPI.go)
+
+The HardwareAPI interface composes above two interfaces.
+
+```
+type HardwareAPI interface {
+	QueryAPI
+	CommandAPI
+}
+```
 
 ### The Coffee machine simulator
 
@@ -42,3 +51,6 @@ A command-line project that simulates Coffee-Machine working can be found [here]
 
 The simulator aquire an instance hardware API mock implementation and pass it to coffee machine's [SwitchOn] (https://github.com/anuchandy/coffeemaker/blob/master/coffeemaker.go#L17) method for monitoring and controlling various components of the hardware via API.
 
+### Design
+
+![Alt text](/CoffeeMaker.JPG?raw=true "Coffee-Maker design")
