@@ -38,11 +38,15 @@ type HardwareAPI interface {
 
 I would highly recommand watching Mark Seemann's 'Encapsulation and SOLID' course, he uses the same Coffee Marker problem to show-case how to apply SOILD principles.
 
-### The Coffee machine simulator
+### Design
+
+![Alt text](/CoffeeMaker.JPG?raw=true "Coffee-Maker design")
+
+#### The Coffee machine simulator [HardwareAPIImpl & main.go]
 
 A command-line project that simulates Coffee-Machine working can be found [here] (https://github.com/anuchandy/coffeemakerSimulator). The simulator project contains two components:
 
-* A mock [implementation](https://github.com/anuchandy/coffeemakerSimulator/tree/master/hardwareAPIImpl) of above mentoned hardware API
+* A mock [implementation](https://github.com/anuchandy/coffeemakerSimulator/tree/master/hardwareAPIImpl) HardwareAPIImpl of above mentoned hardware API
 * A [command-line interface](https://github.com/anuchandy/coffeemakerSimulator/blob/master/main.go) that allows user to:
     1. Fill water into Boiler
     2. Place pot in Warmer plate
@@ -51,11 +55,60 @@ A command-line project that simulates Coffee-Machine working can be found [here]
     5. See the current state of the machine
     6. Exit the simulation
 
-The simulator aquire an instance hardware API mock implementation and pass it to coffee machine's [SwitchOn] (https://github.com/anuchandy/coffeemaker/blob/master/coffeemaker.go#L17) method for monitoring and controlling various components of the hardware via API.
+The simulator creates the mock hardware, switch-on the coffee-maker [The is means coffee-maker will start monitoring and controlling various components of the hardware via API], read input from user and invokes various hardware methods to trigger user action.
 
-### Design
+```go
+  // Creates a mock coffee-machine hardware
+  var cmHardware *hardwareAPIImpl.HardwareAPIImpl = &hardwareAPIImpl.HardwareAPIImpl{}
+  // Initializes the hardware
+  cmHardware.Reset()
 
-![Alt text](/CoffeeMaker.JPG?raw=true "Coffee-Maker design")
+  // Switch-on the coffee-maker.
+  coffeemaker.SwitchOn(cmHardware)
+
+  var ui hardwareAPIImpl.UserAction = cmHardware
+  for ;; {
+    var action int
+    fmt.Print("\nAction [1: Fill_Water 2: Place_Pot 3: Remove_Pot 4: Press_BrewButton 5: Show_Status 6: Exit] : ")
+    fmt.Scanf("%d", &action)
+
+    if action == 1 {
+      ui.FillWater()
+    }	else if action == 2 {
+      ui.PutPot()
+    } else if action == 3 {
+      ui.RemovePot()
+    } else if action == 4 {
+      ui.PressBrewButton()
+    } else if action == 5 {
+      ui.ShowState()
+    } else if action == 6 {
+      break
+    } else  {
+      fmt.Println("Unknown action")
+    }
+  }
+
+  // Switch-off the coffee-maker.
+  coffeemaker.SwitchOff()
+```
+
+The HardwareAPIImpl satisfies an interface UserAction, inaddition to HardwareAPI interface.
+
+```go
+type UserAction interface {
+  // Fill water to boiler.
+  FillWater()
+  // Press the brewing button.
+  PressBrewButton()
+  // Place pot in the warmer plate.
+  PutPot()
+  // Remove pot from the warmer plate.
+  RemovePot()
+  // Show the current status, state of coffee-maker.
+  ShowState()
+}
+```
 
 #### EventAggregator
 
@@ -142,43 +195,6 @@ The creator method create the controller and subscribe for events that controlle
 
 #### Coffee-maker simulator
 
-The simulator creates the mock hardware, starts the coffee-maker, read input from user and invokes various hardware methods to trigger user action.
-
-```go
-  // Creates a mock coffee-machine hardware
-  var cmHardware *hardwareAPIImpl.HardwareAPIImpl = &hardwareAPIImpl.HardwareAPIImpl{}
-  // Initializes the hardware
-  cmHardware.Reset()
-
-  // Switch-on the coffee-maker.
-  coffeemaker.SwitchOn(cmHardware)
-
-  var ui hardwareAPIImpl.UserAction = cmHardware
-  for ;; {
-    var action int
-    fmt.Print("\nAction [1: Fill_Water 2: Place_Pot 3: Remove_Pot 4: Press_BrewButton 5: Show_Status 6: Exit] : ")
-    fmt.Scanf("%d", &action)
-
-    if action == 1 {
-      ui.FillWater()
-    }	else if action == 2 {
-      ui.PutPot()
-    } else if action == 3 {
-      ui.RemovePot()
-    } else if action == 4 {
-      ui.PressBrewButton()
-    } else if action == 5 {
-      ui.ShowState()
-    } else if action == 6 {
-      break
-    } else  {
-      fmt.Println("Unknown action")
-    }
-  }
-
-  // Switch-off the coffee-maker.
-  coffeemaker.SwitchOff()
-```
 
 
 
