@@ -32,7 +32,7 @@ course, I decided to apply [Command-Query seperation principle](https://en.wikip
 A command-line project that simulates Coffee-Machine working can be found [here] (https://github.com/anuchandy/coffeemakerSimulator). The simulator project contains two components:
 
 * A mock [implementation](https://github.com/anuchandy/coffeemakerSimulator/tree/master/hardwareAPIImpl) of above mentoned hardware API
-* A command-line user interface that allows user to:
+* A [command-line interface](https://github.com/anuchandy/coffeemakerSimulator/blob/master/main.go) that allows user to:
     1. Fill water into Boiler
     2. Place pot in Warmer plate
     3. Remove pot from Warmer plate
@@ -40,4 +40,5 @@ A command-line project that simulates Coffee-Machine working can be found [here]
     5. See the current state of the machine
     6. Exit the simulation
 
+The simulator aquire an instance hardware API mock implementation and pass it to coffee machine's [SwitchOn] (https://github.com/anuchandy/coffeemaker/blob/master/coffeemaker.go#L17) method for monitoring and controlling various components of the hardware via API.
 
