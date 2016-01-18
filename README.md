@@ -129,12 +129,54 @@ Each controller subscribe for one or more hardware events that is used to decide
 * Whether or not to change the state of the component it controlling.
 * If state needs to be changed then what should to be the new state.
 
-When we create an instance of controllers, the create method requires reference to the EventAggregator and hardware API interface.
+While creating instance of controllers, reference to the EventAggregator and hardware API interface will be passed to the creater method.
 
+e.g.
 ```go
 func NewBoilerController(aggregator *events.Aggregator, api hardwareAPI.CommandAPI) *BoilerController
 ```
 
 The creator method create the controller and subscribe for events that controller is interested to receive.
+
+#### Coffee-maker simulator
+
+The simulator creates the mock hardware, starts the coffee-maker, read input from user and invokes various hardware methods to trigger user action.
+
+```go
+  // Creates a mock coffee-machine hardware
+  var cmHardware *hardwareAPIImpl.HardwareAPIImpl = &hardwareAPIImpl.HardwareAPIImpl{}
+  // Initializes the hardware
+  cmHardware.Reset()
+
+  // Switch-on the coffee-maker.
+  coffeemaker.SwitchOn(cmHardware)
+
+  var ui hardwareAPIImpl.UserAction = cmHardware
+  for ;; {
+    var action int
+    fmt.Print("\nAction [1: Fill_Water 2: Place_Pot 3: Remove_Pot 4: Press_BrewButton 5: Show_Status 6: Exit] : ")
+    fmt.Scanf("%d", &action)
+
+    if action == 1 {
+      ui.FillWater()
+    }	else if action == 2 {
+      ui.PutPot()
+    } else if action == 3 {
+      ui.RemovePot()
+    } else if action == 4 {
+      ui.PressBrewButton()
+    } else if action == 5 {
+      ui.ShowState()
+    } else if action == 6 {
+      break
+    } else  {
+      fmt.Println("Unknown action")
+    }
+  }
+
+  // Switch-off the coffee-maker.
+  coffeemaker.SwitchOff()
+```
+
 
 
